@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # SnapVLA sync helper.
 #
-# Pulls the latest commit of the current branch on both the Windows inference
-# host and the Raspberry Pi edge. Run from the Mac after `git push`.
+# Pulls the active branch on the Windows inference host and the Raspberry Pi
+# edge from a single command on the Mac dev machine, so GitHub stays the
+# single source of truth for code flowing to both runtime targets.
 #
 # Usage:
 #   scripts/sync.sh            # pull on both hosts
@@ -10,12 +11,10 @@
 #   scripts/sync.sh windows    # pull on the Windows box only
 #
 # Requires:
-#   - sshpass installed (brew install hudochenkov/sshpass/sshpass)
+#   - Passwordless SSH already configured for both hosts (ssh-copy-id).
 #   - SnapVLA checked out at matching paths on both hosts.
 
 set -euo pipefail
-
-readonly PASS='2004040316syZ#'
 
 readonly PI_USER='yanxin'
 readonly PI_HOST='raspberrypi.local'
@@ -29,13 +28,13 @@ branch="$(git rev-parse --abbrev-ref HEAD)"
 
 pull_pi() {
     echo "[pi] pulling $branch on $PI_HOST..."
-    sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no "$PI_USER@$PI_HOST" \
+    ssh -o StrictHostKeyChecking=no "$PI_USER@$PI_HOST" \
         "cd $PI_PATH && git fetch origin && git checkout $branch && git pull --ff-only origin $branch"
 }
 
 pull_windows() {
     echo "[windows] pulling $branch on $WIN_HOST..."
-    sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no "$WIN_USER@$WIN_HOST" \
+    ssh -o StrictHostKeyChecking=no "$WIN_USER@$WIN_HOST" \
         "cd \"$WIN_PATH\" && git fetch origin && git checkout $branch && git pull --ff-only origin $branch"
 }
 
