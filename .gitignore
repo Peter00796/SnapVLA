@@ -12,4 +12,5 @@ uv.lock
 .DS_Store
 models/
 data/
-captures/
+captures/*
+!captures/.gitkeep
