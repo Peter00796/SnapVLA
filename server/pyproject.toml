@@ -1,0 +1,24 @@
+[project]
+name = "snapvla-server"
+version = "0.1.0"
+description = "SnapVLA server runtime (Windows + CUDA, VLM/VLA inference)"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "snapvla",
+    "torch>=2.4",
+    "torchvision>=0.19",
+    "transformers>=4.45",
+    "accelerate>=0.34",
+    "einops>=0.7",
+    "pillow>=10.0",
+]
+
+[tool.uv.sources]
+snapvla = { path = "..", editable = true }
+torch = [{ index = "pytorch-cu124", marker = "sys_platform == 'win32'" }]
+torchvision = [{ index = "pytorch-cu124", marker = "sys_platform == 'win32'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true

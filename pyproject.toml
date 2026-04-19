@@ -1,0 +1,32 @@
+[project]
+name = "snapvla"
+version = "0.1.0"
+description = "Observability-first VLM/VLA pipeline for split edge/server inference"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "numpy>=1.26",
+    "pydantic>=2.6",
+    "msgpack>=1.0",
+    "websockets>=12.0",
+    "pillow>=10.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.5",
+    "pytest>=8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["snapvla"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
