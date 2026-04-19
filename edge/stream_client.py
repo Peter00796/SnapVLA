@@ -29,7 +29,7 @@ from snapvla.edge.usb_camera import USBCameraSource
 logger = logging.getLogger(__name__)
 
 
-async def run(server_url: str, prompt: str, fps: float, device: int | str) -> None:
+async def run(server_url: str, prompt: str, fps: float, device: int | str, max_frames: int = 0) -> None:
     interval = 1.0 / fps if fps > 0 else 0.0
     frame_id = 0
 
@@ -61,6 +61,8 @@ async def run(server_url: str, prompt: str, fps: float, device: int | str) -> No
                     for t in resp.traces:
                         print(f"    trace {t['stage']:>20s}  +{t['ms']:.1f}ms")
                 frame_id += 1
+                if max_frames > 0 and frame_id >= max_frames:
+                    break
                 sleep_s = interval - (time.perf_counter() - loop_t0)
                 if sleep_s > 0:
                     await asyncio.sleep(sleep_s)
@@ -72,11 +74,12 @@ def main() -> None:
     parser.add_argument("--prompt", default="Describe this image in one short sentence.")
     parser.add_argument("--fps", type=float, default=2.0)
     parser.add_argument("--device", default=0)
+    parser.add_argument("--frames", type=int, default=0, help="Stop after N frames (0 = unlimited).")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     try:
-        asyncio.run(run(args.server, args.prompt, args.fps, args.device))
+        asyncio.run(run(args.server, args.prompt, args.fps, args.device, args.frames))
     except KeyboardInterrupt:
         print("bye")
 
