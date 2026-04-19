@@ -7,6 +7,9 @@ dependencies = [
     "snapvla",
     "torch>=2.7",
     "torchvision>=0.22",
+    # Moondream2 remote code (revision 2024-08-26) breaks on transformers>=4.50 --
+    # PreTrainedModel stopped inheriting GenerationMixin. Revisit when the model
+    # repo updates its remote code.
     "transformers>=4.45,<4.50",
     "accelerate>=0.34",
     "einops>=0.7",

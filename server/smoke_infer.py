@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import io
+import logging
 import sys
 from pathlib import Path
 
@@ -19,14 +20,21 @@ from snapvla.server.stages import DecodeJpegStage, LogStage, MoondreamStage
 
 
 def main() -> int:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+
     parser = argparse.ArgumentParser(description="SnapVLA server smoke test.")
     parser.add_argument("--image", type=Path, default=Path("captures/smoke_001.jpg"))
     parser.add_argument("--prompt", type=str, default="Describe this image in one short sentence.")
     args = parser.parse_args()
 
+    image_explicit = "--image" in sys.argv
+
     if args.image.exists():
         jpeg_bytes = args.image.read_bytes()
         src = str(args.image)
+    elif image_explicit:
+        print(f"[smoke] ERROR: --image path does not exist: {args.image}", file=sys.stderr)
+        return 1
     else:
         img = Image.new("RGB", (224, 224), color=(64, 128, 192))
         for x in range(224):
