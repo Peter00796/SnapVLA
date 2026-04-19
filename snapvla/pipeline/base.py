@@ -134,17 +134,23 @@ class VLAPipeline(Generic[TContext]):
         return self
 
     def build(self) -> VLAPipeline[TContext]:
-        available: set[str] = {
-            name
-            for name, info in self.context_schema.model_fields.items()
-            if not info.is_required()
-        }
+        """Validate stage-to-stage field wiring.
+
+        Seeds the available-fields set from ALL declared fields on the context
+        schema — including required ones (those without defaults). Required
+        fields are assumed to be supplied by the caller via ``initial_data``
+        passed to ``run_once()``; if they are missing at runtime, Pydantic will
+        raise a ``ValidationError`` there. Topology validation only checks that
+        each stage's ``required_inputs`` are either declared on the context or
+        produced by an earlier stage.
+        """
+        available: set[str] = set(self.context_schema.model_fields)
         for stage in self.stages:
             missing = [f for f in stage.required_inputs if f not in available]
             if missing:
                 raise ValueError(
                     f"Stage '{stage.name}' requires {missing}; not produced by any "
-                    f"earlier stage and no default on '{self.context_schema.__name__}'. "
+                    f"earlier stage and not declared on '{self.context_schema.__name__}'. "
                     f"Available: {sorted(available)}"
                 )
             available.update(stage.provided_outputs)
