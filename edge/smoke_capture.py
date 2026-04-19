@@ -33,8 +33,10 @@ def main() -> None:
     assert set(frame) >= {"rgb", "jpeg", "timestamp"}, f"missing keys: {set(frame)}"
     rgb = frame["rgb"]
     jpeg = frame["jpeg"]
-    assert isinstance(rgb, np.ndarray) and rgb.shape == (480, 640, 3), f"bad rgb shape: {rgb.shape}"
+    assert isinstance(rgb, np.ndarray), f"rgb is not ndarray: {type(rgb)}"
+    assert rgb.shape == (480, 640, 3), f"rgb shape: {rgb.shape}"
     assert rgb.dtype == np.uint8, f"bad rgb dtype: {rgb.dtype}"
+    assert jpeg is not None, "MJPG encode returned None — cv2.imencode failed"
     assert isinstance(jpeg, (bytes, bytearray)), f"jpeg not bytes: {type(jpeg)}"
     assert len(jpeg) > 1000, f"jpeg too small: {len(jpeg)} bytes"
 
