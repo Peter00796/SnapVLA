@@ -106,7 +106,7 @@ class VLAPipeline(Generic[TContext]):
     """Ordered sequence of stages sharing a typed context.
 
     build() runs a topology check (every required_inputs field must be
-    produced by an earlier stage or exist as a default on the context).
+    produced by an earlier stage or declared on the context schema).
     run_once() instantiates the context and drives all stages, emitting a
     StageTrace per stage to the configured trace_sink.
     """

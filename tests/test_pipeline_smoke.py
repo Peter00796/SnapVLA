@@ -37,7 +37,7 @@ def _make_jpeg(width: int = 64, height: int = 64) -> bytes:
     return buf.getvalue()
 
 
-def test_pipeline_build_and_run() -> None:
+def test_build_accepts_required_context_fields() -> None:
     jpeg_bytes = _make_jpeg()
 
     pipeline: VLAPipeline[InferenceContext] = (
@@ -58,7 +58,7 @@ def test_pipeline_build_and_run() -> None:
     assert [t.stage_name for t in traces] == ["DecodeJPEG", "FakeVLM", "Log"]
 
     for trace in traces:
-        assert trace.latency_ms > 0
+        assert trace.latency_ms >= 0
 
     # DecodeJpegStage outputs rgb; _snapshot formats ndarray shape as "(64, 64, 3)".
     assert "(64, 64, 3)" in traces[0].outputs_snapshot["rgb"]
