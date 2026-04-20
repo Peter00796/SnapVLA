@@ -24,23 +24,25 @@ from snapvla.common.wire import (
 )
 from snapvla.pipeline import VLAPipeline
 from snapvla.server.contexts import InferenceContext
-from snapvla.server.stages import DecodeJpegStage, LogStage, MoondreamStage
+from snapvla.server.stages import DecodeJpegStage, LogStage
+from snapvla.server.stages_registry import MODEL_STAGES
 
 logger = logging.getLogger(__name__)
 
 
-def build_pipeline() -> VLAPipeline[InferenceContext]:
+def build_pipeline(model: str = "moondream") -> VLAPipeline[InferenceContext]:
+    stage_cls = MODEL_STAGES[model]
     pipeline = (
         VLAPipeline(InferenceContext)
         .add_stage(DecodeJpegStage())
-        .add_stage(MoondreamStage())
+        .add_stage(stage_cls())
         .add_stage(LogStage())
     )
     return pipeline.build()
 
 
-async def serve(host: str, port: int) -> None:
-    pipeline = build_pipeline()
+async def serve(host: str, port: int, model: str = "moondream") -> None:
+    pipeline = build_pipeline(model)
     # Warm up the model once so the first client request isn't a 10s stall.
     logger.info("warming up model...")
     warm_jpeg = _placeholder_jpeg()
@@ -99,11 +101,12 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--model", choices=sorted(MODEL_STAGES.keys()), default="moondream")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     try:
-        asyncio.run(serve(args.host, args.port))
+        asyncio.run(serve(args.host, args.port, args.model))
     except KeyboardInterrupt:
         pass
 

@@ -31,7 +31,7 @@ from snapvla.common.wire import (
 from snapvla.pipeline import VLAPipeline
 from snapvla.server.contexts import InferenceContext
 from snapvla.server.stages import DecodeJpegStage, LogStage
-from snapvla.server.stages_vla import OpenVLAStage
+from snapvla.server.stages_registry import MODEL_STAGES
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ def build_pipeline(model: str = "openvla") -> VLAPipeline[InferenceContext]:
     pipeline = (
         VLAPipeline(InferenceContext)
         .add_stage(DecodeJpegStage())
-        .add_stage(OpenVLAStage(model_path=_resolve_model_path()))
+        .add_stage(MODEL_STAGES["openvla"](model_path=_resolve_model_path()))
         .add_stage(LogStage())
     )
     return pipeline.build()

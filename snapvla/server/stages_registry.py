@@ -9,15 +9,23 @@ runtime.
 
 from __future__ import annotations
 
+import logging
+
 from snapvla.server.stages import MODEL_STAGES
 
+logger = logging.getLogger(__name__)
+
+# Two-venv design: server (Moondream) venv does not have bitsandbytes or
+# transformers 4.54, so importing stages_vla will fail there. That is
+# expected — the registry is still usable with only the Moondream stage.
+# The server-vla venv has both and will register OpenVLAStage successfully.
 try:
     from snapvla.server.stages_vla import OpenVLAStage
 
     MODEL_STAGES["openvla"] = OpenVLAStage
-except ImportError:
-    # bitsandbytes / transformers 4.54 not installed in this venv — VLA path
-    # is unavailable but the registry is still usable for Moondream.
-    pass
+except ImportError as exc:
+    logger.debug(
+        "VLA stage not registered (expected in Moondream-only venv): %s", exc
+    )
 
 __all__ = ["MODEL_STAGES"]

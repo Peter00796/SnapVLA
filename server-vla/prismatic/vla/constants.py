@@ -35,7 +35,6 @@ ACTION_TOKEN_BEGIN_IDX: int = 31743
 ACTION_DIM: int = 7
 
 # Number of action steps per prediction chunk (1 for base OpenVLA SFT, >1 for OFT chunk models)
-# Set to 1 here; predict_action will fall back to generate() if this causes shape mismatches.
 NUM_ACTIONS_CHUNK: int = 1
 
 # Normalization type — BOUNDS_Q99 uses q01/q99 percentiles (confirmed by dataset_statistics.json keys)

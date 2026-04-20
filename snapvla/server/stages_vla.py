@@ -45,16 +45,12 @@ class OpenVLAStage(Stage[InferenceContext]):
         self,
         model_path: str | None = None,
         unnorm_key: str = "libero_10_no_noops",
-        quant: str = "4bit",
     ) -> None:
-        if quant != "4bit":
-            raise ValueError(f"Only '4bit' quant is supported; got {quant!r}")
         self.model_path: str = (
             model_path
             or os.environ.get("SNAPVLA_OPENVLA_PATH", _DEFAULT_MODEL_PATH)
         )
         self.unnorm_key = unnorm_key
-        self.quant = quant
         self._processor: Any = None
         self._model: Any = None
 
@@ -65,7 +61,7 @@ class OpenVLAStage(Stage[InferenceContext]):
         from transformers import AutoModelForVision2Seq, AutoProcessor, BitsAndBytesConfig
 
         path = self.model_path
-        logger.info("Loading OpenVLA-OFT from %s (quant=%s)...", path, self.quant)
+        logger.info("Loading OpenVLA-OFT from %s (4-bit NF4)...", path)
         torch.cuda.reset_peak_memory_stats()
         t0 = time.time()
 
