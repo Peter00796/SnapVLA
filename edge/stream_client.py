@@ -4,10 +4,17 @@ Grabs frames from a USB camera and ships each one to the inference server
 over WebSocket, printing the text response so you can eyeball correctness.
 
 Usage (from the Pi):
-    uv run python -m edge.stream_client \\
-        --server ws://192.168.88.12:8765/infer \\
-        --prompt "Describe what you see in one sentence." \\
-        --fps 2
+    # VLM (Moondream)
+    uv run python -m edge.stream_client \
+        --server ws://192.168.88.12:8765/ \
+        --prompt "Describe what you see in one short sentence." \
+        --fps 1 --frames 10
+
+    # VLA (OpenVLA-OFT)
+    uv run python -m edge.stream_client \
+        --server ws://192.168.88.12:8765/ \
+        --prompt "pick up the object" \
+        --fps 1 --frames 3
 """
 
 from __future__ import annotations
@@ -77,7 +84,11 @@ async def run(server_url: str, prompt: str, fps: float, device: int | str, max_f
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--server", default="ws://192.168.88.12:8765/infer")
-    parser.add_argument("--prompt", default="Describe this image in one short sentence.")
+    parser.add_argument(
+        "--prompt",
+        required=True,
+        help="Natural-language prompt. For Moondream use a question; for OpenVLA use a task instruction like 'pick up the object'.",
+    )
     parser.add_argument("--fps", type=float, default=2.0)
     parser.add_argument("--device", default=0)
     parser.add_argument("--frames", type=int, default=0, help="Stop after N frames (0 = unlimited).")
