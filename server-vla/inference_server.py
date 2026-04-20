@@ -14,10 +14,14 @@ import argparse
 import asyncio
 import logging
 import os
+import sys
 import time
 from pathlib import Path
 
 import websockets
+
+# ensure_model_patches lives in the same directory as this script
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from snapvla.common.wire import (
     InferenceResponse,
