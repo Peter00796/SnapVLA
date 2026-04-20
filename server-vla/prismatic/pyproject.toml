@@ -1,0 +1,6 @@
+[project]
+name = "prismatic"
+version = "0.1.0"
+description = "Minimal prismatic stub for OpenVLA-OFT inference (constants and mask utils only)"
+requires-python = ">=3.11"
+dependencies = ["torch"]
