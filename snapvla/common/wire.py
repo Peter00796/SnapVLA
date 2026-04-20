@@ -13,6 +13,7 @@ Server -> Client (InferenceResponse)
     ts_server  : float   time.time() on the server after inference
     latency_ms : float   server-side inference wall time
     text       : str     model output (caption / answer / action tokens)
+    action     : list[float]|None  7-DoF action from VLA path; None for VLM-only
     traces     : list    list of StageTrace.to_dict() entries
     error      : str|None
 """
@@ -50,6 +51,7 @@ class InferenceResponse:
     ts_server: float
     latency_ms: float
     text: str
+    action: list[float] | None = None
     traces: list[dict[str, Any]] = field(default_factory=list)
     error: str | None = None
 
@@ -60,6 +62,7 @@ class InferenceResponse:
                 "ts_server": self.ts_server,
                 "latency_ms": self.latency_ms,
                 "text": self.text,
+                "action": self.action,
                 "traces": self.traces,
                 "error": self.error,
             },
@@ -92,6 +95,7 @@ def decode_response(buf: bytes) -> InferenceResponse:
         ts_server=d["ts_server"],
         latency_ms=d["latency_ms"],
         text=d["text"],
+        action=d.get("action"),
         traces=d.get("traces", []),
         error=d.get("error"),
     )

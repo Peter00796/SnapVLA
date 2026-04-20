@@ -57,6 +57,12 @@ async def run(server_url: str, prompt: str, fps: float, device: int | str, max_f
                     f"[#{resp.frame_id:04d}] infer={resp.latency_ms:.1f}ms "
                     f"rtt={rtt_ms:.1f}ms  text={resp.text!r}"
                 )
+                if resp.action is not None:
+                    if len(resp.action) == 7:
+                        formatted = "[" + ", ".join(f"{v:.3f}" for v in resp.action) + "]"
+                    else:
+                        formatted = str(resp.action)
+                    print(f"     action={formatted}")
                 if resp.traces:
                     for t in resp.traces:
                         print(f"    trace {t['stage']:>20s}  +{t['ms']:.1f}ms")

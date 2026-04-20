@@ -84,3 +84,8 @@ class MoondreamStage(Stage[InferenceContext]):
         answer = self._model.answer_question(enc, ctx.prompt or "Describe this image.", self._tokenizer)
         ctx.text = answer
         return ctx
+
+
+# Minimal registry so callers can resolve a stage by name without importing
+# the heavy VLA deps. stages_registry extends this dict when available.
+MODEL_STAGES: dict[str, type[Stage[InferenceContext]]] = {"moondream": MoondreamStage}

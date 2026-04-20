@@ -22,3 +22,4 @@ class InferenceContext(BaseContext):
     rgb: Any | None = None
     pil_image: Any | None = None
     text: str = ""
+    action: list[float] | None = None
